@@ -28,7 +28,7 @@ app.get('/', function (request, response) {
 app.post('/rest/bringmariokart', function (request, response) {
 
     var commandText = request.body.text;
-
+    response.setHeader('Content-Type', 'application/json');
 
     console.log(request.body.text);
     redisClient.get("stats", function (err, reply) {
