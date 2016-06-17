@@ -13,6 +13,10 @@ app.get('/', function(request, response) {
   response.render('pages/index');
 });
 
+app.post('/rest/bringmariokart', function(request, response) {
+  response.end('Hello Bring! Mariokart Slack Command');
+});
+
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
