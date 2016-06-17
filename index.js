@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser')
 var app = express();
+var _ = require('lodash');
+
 
 var redis = require("redis")
 
@@ -28,7 +30,7 @@ app.get('/', function (request, response) {
 app.post('/rest/bringmariokart', function (request, response) {
 
     var commandText = request.body.text;
-    response.setHeader('Content-Type', 'application/json');
+    response.setHeader('Content-Type', 'text/plain');
 
     console.log(request.body.text);
     redisClient.get("stats", function (err, reply) {
@@ -53,9 +55,21 @@ app.post('/rest/bringmariokart', function (request, response) {
 });
 
 app.get('/rest/bringmariokart', function (request, response) {
-    response.setHeader('Content-Type', 'application/json');
     redisClient.get("stats", function (err, reply) {
-        response.end(reply);
+
+        if(request.query.type == 'csv') {
+            var stats = JSON.parse(reply);
+            var csv = "";
+            _.forEach(stats.games, function (value) {
+                console.log("\"" + value.date + "\",\"" + value.player + "\"");
+                csv += value.date + "," + value.player + "\n";
+            });
+            response.setHeader('Content-Type', 'text/plain');
+            response.end(csv);
+        } else {
+            response.setHeader('Content-Type', 'application/json');
+            response.end(reply);
+        }
     });
 
 });
@@ -63,6 +77,7 @@ app.get('/rest/bringmariokart', function (request, response) {
 
 app.delete('/rest/bringmariokart', function (request, response) {
     redisClient.set("stats", "{ \"games\" : []}");
+    response.setHeader('Content-Type', 'text/plain');
     response.end("stats deleted");
 
 });
