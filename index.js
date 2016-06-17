@@ -53,6 +53,7 @@ app.post('/rest/bringmariokart', function (request, response) {
 });
 
 app.get('/rest/bringmariokart', function (request, response) {
+    response.setHeader('Content-Type', 'application/json');
     redisClient.get("stats", function (err, reply) {
         response.end(reply);
     });
